@@ -1,0 +1,133 @@
+<html>
+<head>
+<title>Security PI</title>
+<script>
+function deleteGallery()
+{
+	var conf = confirm("Are you sure you want to delete all captured images?");
+	if(conf == false){
+		return;
+    }
+
+	var xmlhttp=new XMLHttpRequest();
+	xmlhttp.onreadystatechange=function()
+	{
+		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+			showGallery();
+		}
+
+    
+	}
+	xmlhttp.open("GET","images.php?q=delete",true);
+	xmlhttp.send();
+}
+
+function jsonToTable(json){
+	var result = "";	
+	var images = eval("(" + json + ")");
+
+	var result = "<html>";
+	result+= "<table cellspacing=\"0\" cellpadding=\"2\" width=\"600\">";
+	result+= "<tr>";
+	var count = 0;
+	for(var i=0;i<images.length;i++){
+		    result+= "<td valign=\"middle\" align=\"center\"><a href=\""+images[i].image+"\">";
+			result+= "<img src=\""+images[i].thumbnail+"\" border=\"0\" />";
+			result+= "</a></td>";
+			if ( ++count % 5 == 0 ) { result+= "</tr><tr>"; }
+	
+		
+	}
+	result+= "</tr>";
+	result+= "</table>";
+	
+	document.getElementById("gallery").innerHTML = result;
+
+}
+
+function showGallery()
+{
+	str = "don't know yet";
+	if (str.length==0)
+	{ 
+		document.getElementById("gallery").innerHTML="";
+		return;
+	}
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange=function()
+	{
+		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+			jsonToTable(xmlhttp.responseText);
+		}
+	}
+	xmlhttp.open("GET","images.php?q="+str,true);
+	xmlhttp.send();
+}
+
+function handleCapturing(enabled)
+{
+	if (enabled.length==0)
+    { 
+	   enabled=false;
+    }
+	var xmlhttp=new XMLHttpRequest();
+	xmlhttp.onreadystatechange=function()
+	{
+		if (xmlhttp.readyState==4 && xmlhttp.status==200)
+		{
+			document.getElementById("status").innerHTML=xmlhttp.responseText;
+		}
+	}
+	xmlhttp.open("GET","capture.php?enable="+enabled,true);
+	xmlhttp.send();
+}
+
+function handleCapturingCBClick(cb) {
+	handleCapturing(cb.checked);  
+}
+
+window.onload = function() 
+                {
+                   showGallery();
+                };
+
+
+
+				
+</script>
+</head>
+<body>
+	<div style="width:100%">
+		<div style="background-color:#CC99FF;">
+			<b style="font-size:150%">Security PI</b>
+		</div>
+		<div style="background-color:#FFCCFF;
+                 height:200px;width:150px;float:left;">
+    			
+				<b>Menu</b><br>
+				<button type="button" id="refresh" onclick="showGallery()">Refresh</button><br>
+				<button type="button" id="delete" onclick="deleteGallery()">Delete</button><br>
+
+				<input type="checkbox" name="imgcapture" value="on" onclick='handleCapturingCBClick(this);'>Capturing Enabled<br>
+
+				<p>Capturing status: </p><label id="status"></label>
+		</div>
+		<div style="background-color:#eeeeee;float:left;">
+				<h2>Image Gallery </h2>
+				<div id="gallery"></div>
+		</div>
+		 <div style="background-color:#CC99FF;clear:both">
+			<center>
+				Raspberry PI Security System
+			</center>
+		</div>
+	</div>
+
+
+
+
+
+	</body>
+</html>
