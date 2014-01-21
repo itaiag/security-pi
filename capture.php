@@ -1,12 +1,18 @@
 <?php
 	function start_capture(){
-		$resp =shell_exec('/usr/bin/python motion.py > /dev/null 2>/dev/null & echo $!');
+		$pid =shell_exec('/usr/bin/python motion.py > /dev/null 2>/dev/null & echo $!');
 		//Printing additional info
-		echo $resp;
+		file_put_contents("pid.tmp",$pid);
+
 	}
 	
 	function stop_capture(){
-		echo "Stopping capturing";
+		if (file_exists("pid.tmp")){
+			$pid = file_get_contents("pid.tmp");
+			unlink("pid.tmp");
+			$result = shell_exec('kill -9 ' . $pid);
+			echo $result;
+		}
 	}
 	
 	$enable=$_REQUEST["enable"];
