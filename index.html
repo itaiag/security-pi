@@ -19,7 +19,7 @@ function deleteGallery()
 
     
 	}
-	xmlhttp.open("GET","images.php?q=delete",true);
+	xmlhttp.open("DELETE","images.php",true);
 	xmlhttp.send();
 }
 
@@ -48,12 +48,6 @@ function jsonToTable(json){
 
 function showGallery()
 {
-	str = "don't know yet";
-	if (str.length==0)
-	{ 
-		document.getElementById("gallery").innerHTML="";
-		return;
-	}
 	var xmlhttp = new XMLHttpRequest();
 	xmlhttp.onreadystatechange=function()
 	{
@@ -62,7 +56,7 @@ function showGallery()
 			jsonToTable(xmlhttp.responseText);
 		}
 	}
-	xmlhttp.open("GET","images.php?q="+str,true);
+	xmlhttp.open("GET","images.php",true);
 	xmlhttp.send();
 }
 
@@ -80,7 +74,7 @@ function handleCapturing(enabled)
 			document.getElementById("status").innerHTML=xmlhttp.responseText;
 		}
 	}
-	xmlhttp.open("GET","capture.php?enable="+enabled,true);
+	xmlhttp.open(enabled ? "PUT" : "DELETE","capturer.php",true);
 	xmlhttp.send();
 }
 

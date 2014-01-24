@@ -1,6 +1,8 @@
 <?php
 require 'KLogger.php';
-
+$pathToImages = 'images/';
+$pathToThumbs = 'thumbnails/';
+$thumbWidth = 200;
 $log = KLogger::instance('.',KLogger::INFO);
 
 
@@ -15,15 +17,31 @@ function delete_folder($path)
 	}
 }
 
-function delete_gallery( $pathToImages, $pathToThumbs ) 
-{
+function images_delete( $request ) 
+{	
+	global $pathToImages;
+	global $pathToThumbs;
 	delete_folder($pathToThumbs);
 	delete_folder($pathToImages);
+}
+
+function images_get( $request){
+	global $pathToImages;
+	global $pathToThumbs;
+	global $thumbWidth;
+	create_thumbs($pathToImages, $pathToThumbs, $thumbWidth);
+	create_gallery($pathToImages, $pathToThumbs);
+}
+
+function images_error($request){
+	echo "Error 501";
 }
 
 function create_thumbs( $pathToImages, $pathToThumbs, $thumbWidth ) 
 {
 	global $log;
+ 
+
 	$log->logInfo('About to create thumbs');
 	// open the directory
 	$dir = opendir( $pathToImages );
@@ -96,14 +114,21 @@ function create_gallery( $pathToImages, $pathToThumbs )
 	echo json_encode($images);
 }
 
-//$log = new KLogger('.');
-//$log = KLogger::instance('.',KLogger::DEBUG);
-//$log->logInfo('About to create thumbs');
 
-if ($_GET['q'] == "delete"){
-	delete_gallery("images/","thumbnails/");
-} else {
-	create_thumbs("images/","thumbnails/",200);
-	create_gallery("images/","thumbnails/");
-}
+$method = $_SERVER['REQUEST_METHOD'];
+$request = explode("/",substr(@$_SERVER['PATH_INFO'],1));
+switch ($method){
+	case 'GET':
+		images_get($request);
+		break;
+	case 'DELETE':
+		images_delete($request);
+		break;
+	default:
+		images_error($request);
+		break;
+	}
+
+
+
 ?>
