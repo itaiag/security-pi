@@ -2,3 +2,7 @@
 images/*.jpg
 thumbnails/*.jpg
 pid.tmp
+log_*.txt
+
+#Editor
+*.swp
